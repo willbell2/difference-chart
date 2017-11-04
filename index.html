@@ -33,14 +33,14 @@ body {
 
 </style>
 <body>
-<script src="//d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 
 var margin = {top: 20, right: 20, bottom: 30, left: 50},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
-var x = d3.scaleTime()
+var x = d3.scaleLinear()
     .range([0, width]);
 
 var y = d3.scaleLinear()
@@ -55,12 +55,12 @@ var yAxis = d3.axisLeft()
 var line = d3.area()
     .curve(d3.curveBasis)
     .x(function(d) { return x(d.sec); })
-    .y(function(d) { return y(d["x"]); });
+    .y(function(d) { return y(d.x); });
 
 var area = d3.area()
     //.curve(d3.curveBasis)
     .x(function(d) { return x(d.sec); })
-    .y1(function(d) { return y(d["x"]); });
+    .y1(function(d) { return y(d.x); });
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -73,15 +73,15 @@ d3.csv("data.csv", function(error, data) {
 
   data.forEach(function(d) {
     d.sec = d.sec;
-    d["x"]= +d["x"];
-    d["y"] = +d["y"];
+    d.x= +d.x;
+    d.y = +d.y;
   });
 
   x.domain(d3.extent(data, function(d) { return d.sec; }));
 
   y.domain([
-    d3.min(data, function(d) { return Math.min(d["x"], d["y"]); }),
-    d3.max(data, function(d) { return Math.max(d["x"], d["y"]); })
+    d3.min(data, function(d) { return Math.min(d.x, d.y); }),
+    d3.max(data, function(d) { return Math.max(d.x, d.y); })
   ]);
 
   svg.datum(data);
@@ -99,7 +99,7 @@ d3.csv("data.csv", function(error, data) {
   svg.append("path")
       .attr("class", "area above")
       .attr("clip-path", "url(#clip-above)")
-      .attr("d", area.y0(function(d) { return y(d["y"]); }));
+      .attr("d", area.y0(function(d) { return y(d.y); }));
 
   svg.append("path")
       .attr("class", "area below")
