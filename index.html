@@ -40,8 +40,6 @@ var margin = {top: 20, right: 20, bottom: 30, left: 50},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
-var parseDate = d3.timeParse("%Y%m%d");
-
 var x = d3.scaleTime()
     .range([0, width]);
 
@@ -56,13 +54,13 @@ var yAxis = d3.axisLeft()
 
 var line = d3.area()
     .curve(d3.curveBasis)
-    .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d["New York"]); });
+    .x(function(d) { return x(d.sec); })
+    .y(function(d) { return y(d["x"]); });
 
 var area = d3.area()
-    .curve(d3.curveBasis)
-    .x(function(d) { return x(d.date); })
-    .y1(function(d) { return y(d["New York"]); });
+    //.curve(d3.curveBasis)
+    .x(function(d) { return x(d.sec); })
+    .y1(function(d) { return y(d["x"]); });
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -70,20 +68,20 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.tsv("data.tsv", function(error, data) {
+d3.csv("df.csv", function(error, data) {
   if (error) throw error;
 
   data.forEach(function(d) {
-    d.date = parseDate(d.date);
-    d["New York"]= +d["New York"];
-    d["San Francisco"] = +d["San Francisco"];
+    d.sec = d.sec;
+    d["x"]= +d["x"];
+    d["y"] = +d["y"];
   });
 
-  x.domain(d3.extent(data, function(d) { return d.date; }));
+  x.domain(d3.extent(data, function(d) { return d.sec; }));
 
   y.domain([
-    d3.min(data, function(d) { return Math.min(d["New York"], d["San Francisco"]); }),
-    d3.max(data, function(d) { return Math.max(d["New York"], d["San Francisco"]); })
+    d3.min(data, function(d) { return Math.min(d["x"], d["y"]); }),
+    d3.max(data, function(d) { return Math.max(d["x"], d["y"]); })
   ]);
 
   svg.datum(data);
@@ -101,7 +99,7 @@ d3.tsv("data.tsv", function(error, data) {
   svg.append("path")
       .attr("class", "area above")
       .attr("clip-path", "url(#clip-above)")
-      .attr("d", area.y0(function(d) { return y(d["San Francisco"]); }));
+      .attr("d", area.y0(function(d) { return y(d["y"]); }));
 
   svg.append("path")
       .attr("class", "area below")
@@ -125,7 +123,7 @@ d3.tsv("data.tsv", function(error, data) {
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("Temperature (ºF)");
+      .text("Valence");
 });
 
 </script>
